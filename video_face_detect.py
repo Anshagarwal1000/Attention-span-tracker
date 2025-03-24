@@ -1,18 +1,27 @@
-import cv2 as cv
+import cv2
 
-capture=cv.VideoCapture(0)
+face_cap = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+video_cap = cv2.VideoCapture(0)
+
 while True:
-    isTrue, frame=capture.read()
-    cv.imshow('Video webcam',frame)
-    gray=cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
-    cv.imshow('Gray',gray)
-    tmp = cv.CascadeClassifier(cv.data.haarcascades + 'haarcascade_frontalface_default.xml')
-    faces=tmp.detectMultiScale(gray,1.1,6)
-    for (x,y,w,h) in faces:
-        cv.rectangle(frame,(x,y),(x+w,y+h),(0,255,0),2)
-    cv.imshow('Faces',frame)
-    if cv.waitKey(20) & 0xFF==ord('d'):
-        break
+    ret, video_data = video_cap.read()
+    col = cv2.cvtColor(video_data, cv2.COLOR_BGR2GRAY)
     
-capture.release()
-cv.destroyAllWindows()
+    faces = face_cap.detectMultiScale(
+        col,
+        scaleFactor=1.1,
+        minNeighbors=5,
+        minSize=(30, 30),
+        flags=cv2.CASCADE_SCALE_IMAGE
+    )
+
+    for (x, y, w, h) in faces:
+        cv2.rectangle(video_data, (x, y), (x + w, y + h), (0, 255, 0), 2)
+
+    cv2.imshow("video_live", video_data)
+
+    if cv2.waitKey(10) == ord("a"):
+        break
+
+video_cap.release()
+cv2.destroyAllWindows()
