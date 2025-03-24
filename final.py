@@ -14,7 +14,7 @@ def calculate_ear(eye):
     ear = (A + B) / (2.0 * C)
     return ear
 
-EAR_THRESHOLD = 0.25  # Threshold for focus detection
+EAR_THRESHOLD = 0.25  # Threshold for eye  detection
 
 def main():
     cap = cv2.VideoCapture(0)
