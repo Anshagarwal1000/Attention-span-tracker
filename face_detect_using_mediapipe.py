@@ -6,7 +6,7 @@ mp_face_detection = mp.solutions.face_detection
 mp_drawing = mp.solutions.drawing_utils
 
 # Open webcam
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(2)
 
 # Create a Face Detection object
 with mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence=0.5) as face_detection:
