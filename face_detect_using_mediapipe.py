@@ -28,8 +28,6 @@ with mp_face_detection.FaceDetection(model_selection=0, min_detection_confidence
         
         # Display the result
         cv2.imshow('Face Detection', frame)
-        
-        # Exit on 'q' key press
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
