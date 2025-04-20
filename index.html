@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Focus Analyzer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1584697964403-b43c87e4c058?ixlib=rb-4.0.3&auto=format&fit=crop&w=1470&q=80') no-repeat center center fixed;
+      background-size: cover;
+      height: 100vh;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      text-align: center;
+      padding: 30px 0 20px;
+      font-size: 36px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .button {
+      padding: 15px 40px;
+      margin: 15px;
+      font-size: 18px;
+      font-weight: 500;
+      border: none;
+      border-radius: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .start {
+      background: #4caf50;
+      color: #fff;
+    }
+
+    .start:hover {
+      background: #43a047;
+      transform: scale(1.05);
+    }
+
+    .stop {
+      background: #f44336;
+      color: #fff;
+    }
+
+    .stop:hover {
+      background: #e53935;
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: #ddd;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="overlay">
+    <header>Focus Analyzer</header>
+
+    <main>
+      <button class="button start" onclick="startAction()">Start</button>
+      <button class="button stop" onclick="stopAction()">Stop</button>
+    </main>
+
+    <footer>&copy; 2025 Focus Analyzer</footer>
+  </div>
+
+  <script>
+    function startAction() {
+      console.log("Start button clicked");
+    }
+
+    function stopAction() {
+      console.log("Stop button clicked");
+    }
+  </script>
+
+</body>
+</html>
