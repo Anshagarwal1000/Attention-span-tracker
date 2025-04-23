@@ -38,7 +38,7 @@ def is_gaze_center(pupil_x, eye_left_x, eye_right_x, pupil_y, eye_top_y, eye_bot
             abs(pupil_y - center_y) < (eye_height * 0.25))
 
 def main():
-    cap = cv2.VideoCapture(2)
+    cap = cv2.VideoCapture(0)
     mp_face_mesh = mp.solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1,
                                        refine_landmarks=True,

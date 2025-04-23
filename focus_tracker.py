@@ -1,19 +1,25 @@
+from flask import Flask, render_template, request
+import threading
+import time
 import cv2
 import mediapipe as mp
-import time
 import matplotlib.pyplot as plt
 from scipy.spatial import distance as dist
 
-# Iris and Eye Landmarks
+app = Flask(__name__)
+
+# Global control flag
+stop_tracking = False
+
+# Landmark indices
 LEFT_IRIS_IDX = [468, 469, 470, 471]
 RIGHT_IRIS_IDX = [473, 474, 475, 476]
 LEFT_EYE_IDX = [33, 160, 158, 133, 153, 144]
 RIGHT_EYE_IDX = [362, 385, 387, 263, 373, 380]
 LEFT_EYE_CORNERS = [33, 133]
 RIGHT_EYE_CORNERS = [362, 263]
-LEFT_EYE_TOP_BOTTOM = [159, 145]  # Top, Bottom
+LEFT_EYE_TOP_BOTTOM = [159, 145]
 RIGHT_EYE_TOP_BOTTOM = [386, 374]
-
 EAR_THRESHOLD = 0.25
 
 def calculate_ear(eye):
@@ -32,13 +38,14 @@ def is_gaze_center(pupil_x, eye_left_x, eye_right_x, pupil_y, eye_top_y, eye_bot
     eye_height = abs(eye_bottom_y - eye_top_y)
     center_x = (eye_left_x + eye_right_x) / 2
     center_y = (eye_top_y + eye_bottom_y) / 2
-
-    # Check if within 25% of eye width and height
     return (abs(pupil_x - center_x) < (eye_width * 0.25) and
             abs(pupil_y - center_y) < (eye_height * 0.25))
 
-def main():
-    cap = cv2.VideoCapture(2)
+def track_focus():
+    global stop_tracking
+    stop_tracking = False
+
+    cap = cv2.VideoCapture(0)
     mp_face_mesh = mp.solutions.face_mesh
     face_mesh = mp_face_mesh.FaceMesh(static_image_mode=False, max_num_faces=1,
                                        refine_landmarks=True,
@@ -52,7 +59,7 @@ def main():
     attentiveness = []
     session_start_time = time.time()
 
-    while True:
+    while not stop_tracking:
         ret, frame = cap.read()
         if not ret:
             break
@@ -69,7 +76,6 @@ def main():
             for face_landmarks in results.multi_face_landmarks:
                 lm = face_landmarks.landmark
 
-                # Get eye data
                 left_eye = [(int(lm[i].x * w), int(lm[i].y * h)) for i in LEFT_EYE_IDX]
                 right_eye = [(int(lm[i].x * w), int(lm[i].y * h)) for i in RIGHT_EYE_IDX]
 
@@ -97,7 +103,6 @@ def main():
                     cv2.circle(frame, left_pupil, 2, (0, 255, 0), -1)
                     cv2.circle(frame, right_pupil, 2, (0, 255, 0), -1)
 
-        # Timing logic
         if is_focused:
             if not focused:
                 focus_start_time = time.time()
@@ -109,10 +114,10 @@ def main():
                 focused = False
             attentiveness.append(0)
 
-        # Display focus time
         focus_display = total_focus_time
         if focused and focus_start_time:
             focus_display += time.time() - focus_start_time
+
         cv2.putText(frame, f'Focus Time: {focus_display:.2f}s', (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
 
@@ -129,7 +134,6 @@ def main():
 
     print(f'Total Focus Time: {total_focus_time:.2f} seconds')
 
-    # Plot graph
     plt.figure(figsize=(12, 6))
     plt.plot(timestamps, attentiveness, color='dodgerblue', linewidth=2)
     plt.fill_between(timestamps, attentiveness, color='lightgreen', alpha=0.3)
@@ -141,5 +145,20 @@ def main():
     plt.tight_layout()
     plt.show()
 
-if __name__ == "__main__":
-    main()
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/start', methods=['POST'])
+def start():
+    threading.Thread(target=track_focus).start()
+    return "Focus tracking started"
+
+@app.route('/stop', methods=['POST'])
+def stop():
+    global stop_tracking
+    stop_tracking = True
+    return "Focus tracking stopped"
+
+if __name__ == '__main__':
+    app.run(debug=True)
